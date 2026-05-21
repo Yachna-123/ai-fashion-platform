@@ -94,4 +94,4 @@ function AuthModal({ onClose, onLogin }) {
   )
 }
 
-export default AuthModalcd 
+export default AuthModal
