@@ -7,8 +7,8 @@ function AuthModal({ onClose, onLogin }) {
 
   const handleSubmit = async () => {
     const url = isLogin
-      ? 'http://localhost:5000/api/auth/login'
-      : 'http://localhost:5000/api/auth/signup'
+      ? 'https://styleai-backend-z1lz.onrender.com/api/auth/login'
+      : 'https://styleai-backend-z1lz.onrender.com/api/auth/signup'
 
     const body = isLogin
       ? { email: form.email, password: form.password }
@@ -94,4 +94,4 @@ function AuthModal({ onClose, onLogin }) {
   )
 }
 
-export default AuthModal
+export default AuthModalcd 
