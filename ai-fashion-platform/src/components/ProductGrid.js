@@ -15,9 +15,12 @@ const outfits = [
 
 const fuse = new Fuse(outfits, {
   keys: ['name', 'aesthetic'],
-  threshold: 0.6,
-  distance: 100,
+  threshold: 0.8,
+  distance: 300,
   minMatchCharLength: 2,
+  ignoreLocation: true,
+  useExtendedSearch: false,
+  shouldSort: true,
 })
 
 function ProductGrid({ filter, search, wishlist, onWishlist, sort, onCardClick, aiResults }) {
@@ -27,7 +30,12 @@ function ProductGrid({ filter, search, wishlist, onWishlist, sort, onCardClick, 
     displayOutfits = aiResults
   } else if (search && search.trim() !== '') {
     const fuseResults = fuse.search(search)
-    displayOutfits = fuseResults.map(r => r.item)
+    displayOutfits = fuseResults.length > 0
+      ? fuseResults.map(r => r.item)
+      : outfits.filter(o =>
+          o.name.toLowerCase().includes(search.toLowerCase()) ||
+          o.aesthetic.toLowerCase().includes(search.toLowerCase())
+        )
     if (filter !== "All") {
       displayOutfits = displayOutfits.filter(o => o.aesthetic === filter)
     }
