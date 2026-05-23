@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+const BASE_URL = 'https://styleai-backend-z1lz.onrender.com'
+
 function AISearch({ onResults, onClear }) {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
@@ -9,7 +11,7 @@ function AISearch({ onResults, onClear }) {
     if (!query.trim()) return
     setLoading(true)
     try {
-      const res = await fetch('http://localhost:5000/api/ai/search', {
+      const res = await fetch(`${BASE_URL}/api/ai/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })

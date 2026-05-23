@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 
+const BASE_URL = 'https://styleai-backend-z1lz.onrender.com'
+
 function AuthModal({ onClose, onLogin }) {
   const [isLogin, setIsLogin] = useState(true)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
@@ -7,8 +9,8 @@ function AuthModal({ onClose, onLogin }) {
 
   const handleSubmit = async () => {
     const url = isLogin
-      ? 'http://localhost:5000/api/auth/login'
-      : 'http://localhost:5000/api/auth/signup'
+      ? `${BASE_URL}/api/auth/login`
+      : `${BASE_URL}/api/auth/signup`
 
     const body = isLogin
       ? { email: form.email, password: form.password }

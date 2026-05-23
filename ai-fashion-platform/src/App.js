@@ -8,6 +8,8 @@ import AuthModal from './components/AuthModal'
 import ProductModal from './components/ProductModal'
 import AISearch from './components/AISearch'
 
+const BASE_URL = 'https://styleai-backend-z1lz.onrender.com'
+
 function App() {
   const [activeFilter, setActiveFilter] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,7 +21,6 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [aiResults, setAiResults] = useState(null)
 
-  // Load wishlist from MongoDB when user logs in
   useEffect(() => {
     if (user) fetchWishlist()
   }, [user])
@@ -28,7 +29,7 @@ function App() {
     const token = localStorage.getItem('token')
     if (!token) return
     try {
-      const res = await fetch('http://localhost:5000/api/wishlist', {
+      const res = await fetch(`${BASE_URL}/api/wishlist`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await res.json()
@@ -43,8 +44,8 @@ function App() {
     const token = localStorage.getItem('token')
     const isWishlisted = wishlist.includes(name)
     const url = isWishlisted
-      ? 'http://localhost:5000/api/wishlist/remove'
-      : 'http://localhost:5000/api/wishlist/add'
+      ? `${BASE_URL}/api/wishlist/remove`
+      : `${BASE_URL}/api/wishlist/add`
     try {
       const res = await fetch(url, {
         method: 'POST',
@@ -64,10 +65,6 @@ function App() {
   const handleSearch = (query) => {
     setSearchQuery(query)
     setAiResults(null)
-  }
-
-  const handleLogin = (u) => {
-    setUser(u)
   }
 
   return (
@@ -115,7 +112,7 @@ function App() {
       {showAuth && (
         <AuthModal
           onClose={() => setShowAuth(false)}
-          onLogin={handleLogin}
+          onLogin={(u) => setUser(u)}
         />
       )}
 
