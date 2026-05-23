@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ProductCard({ name, price, aesthetic, emoji, wishlist, onWishlist, onClick }) {
+function ProductCard({ name, price, aesthetic, emoji, wishlist = [], onWishlist, onClick }) {
   const isWishlisted = wishlist.includes(name)
 
   return (

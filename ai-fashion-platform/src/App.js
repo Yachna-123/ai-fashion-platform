@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import FilterBar from './components/FilterBar'
@@ -6,6 +6,7 @@ import ProductGrid from './components/ProductGrid'
 import Footer from './components/Footer'
 import AuthModal from './components/AuthModal'
 import ProductModal from './components/ProductModal'
+import AISearch from './components/AISearch'
 
 function App() {
   const [activeFilter, setActiveFilter] = useState("All")
@@ -16,12 +17,57 @@ function App() {
   const [showWishlist, setShowWishlist] = useState(false)
   const [sort, setSort] = useState("default")
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [aiResults, setAiResults] = useState(null)
 
-  const handleWishlist = (name) => {
+  // Load wishlist from MongoDB when user logs in
+  useEffect(() => {
+    if (user) fetchWishlist()
+  }, [user])
+
+  const fetchWishlist = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    try {
+      const res = await fetch('http://localhost:5000/api/wishlist', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setWishlist(data.wishlist || [])
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleWishlist = async (name) => {
     if (!user) { setShowAuth(true); return }
-    setWishlist(prev =>
-      prev.includes(name) ? prev.filter(i => i !== name) : [...prev, name]
-    )
+    const token = localStorage.getItem('token')
+    const isWishlisted = wishlist.includes(name)
+    const url = isWishlisted
+      ? 'http://localhost:5000/api/wishlist/remove'
+      : 'http://localhost:5000/api/wishlist/add'
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ item: name })
+      })
+      const data = await res.json()
+      setWishlist(data.wishlist || [])
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleSearch = (query) => {
+    setSearchQuery(query)
+    setAiResults(null)
+  }
+
+  const handleLogin = (u) => {
+    setUser(u)
   }
 
   return (
@@ -32,7 +78,14 @@ function App() {
         wishlistCount={wishlist.length}
         onWishlistClick={() => setShowWishlist(!showWishlist)}
       />
-      <Hero onSearch={setSearchQuery} />
+      <Hero onSearch={handleSearch} />
+      <AISearch
+        onResults={(results) => {
+          setAiResults(results)
+          setSearchQuery("")
+        }}
+        onClear={() => setAiResults(null)}
+      />
       <FilterBar onFilter={setActiveFilter} onSort={setSort} />
 
       {showWishlist && wishlist.length > 0 && (
@@ -55,13 +108,14 @@ function App() {
         onWishlist={handleWishlist}
         sort={sort}
         onCardClick={setSelectedProduct}
+        aiResults={aiResults}
       />
       <Footer />
 
       {showAuth && (
         <AuthModal
           onClose={() => setShowAuth(false)}
-          onLogin={(u) => setUser(u)}
+          onLogin={handleLogin}
         />
       )}
 

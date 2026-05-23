@@ -1,4 +1,5 @@
 import React from 'react'
+import Fuse from 'fuse.js'
 import ProductCard from './ProductCard'
 
 const outfits = [
@@ -12,24 +13,47 @@ const outfits = [
   { id: 8, name: "Floral Co-ord Set", price: "2099", aesthetic: "Summer Casual", emoji: "🌸" },
 ]
 
-function ProductGrid({ filter, search, wishlist, onWishlist, sort, onCardClick }) {
-  const filtered = outfits
-    .filter(o => filter === "All" || o.aesthetic === filter)
-    .filter(o => o.name.toLowerCase().includes(search.toLowerCase()) ||
-                 o.aesthetic.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => {
-      if (sort === "low") return Number(a.price) - Number(b.price)
-      if (sort === "high") return Number(b.price) - Number(a.price)
-      return 0
-    })
+const fuse = new Fuse(outfits, {
+  keys: ['name', 'aesthetic'],
+  threshold: 0.6,
+  distance: 100,
+  minMatchCharLength: 2,
+})
+
+function ProductGrid({ filter, search, wishlist, onWishlist, sort, onCardClick, aiResults }) {
+  let displayOutfits
+
+  if (aiResults !== null && aiResults !== undefined) {
+    displayOutfits = aiResults
+  } else if (search && search.trim() !== '') {
+    const fuseResults = fuse.search(search)
+    displayOutfits = fuseResults.map(r => r.item)
+    if (filter !== "All") {
+      displayOutfits = displayOutfits.filter(o => o.aesthetic === filter)
+    }
+  } else {
+    displayOutfits = outfits.filter(o => filter === "All" || o.aesthetic === filter)
+  }
+
+  displayOutfits = [...displayOutfits].sort((a, b) => {
+    if (sort === "low") return Number(a.price) - Number(b.price)
+    if (sort === "high") return Number(b.price) - Number(a.price)
+    return 0
+  })
 
   return (
     <div className="bg-black px-8 py-12">
+      {aiResults !== null && aiResults !== undefined && (
+        <p className="text-center text-pink-400 text-sm mb-6">
+          ✨ AI found {aiResults.length} outfit{aiResults.length !== 1 ? 's' : ''} for you
+        </p>
+      )}
       <h2 className="text-white text-3xl font-bold text-center mb-8">
-        Trending <span className="text-pink-400">Styles</span>
+        {aiResults !== null && aiResults !== undefined ? 'AI Recommended' : 'Trending'}{' '}
+        <span className="text-pink-400">Styles</span>
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {filtered.length > 0 ? filtered.map(outfit => (
+        {displayOutfits.length > 0 ? displayOutfits.map(outfit => (
           <ProductCard
             key={outfit.id}
             {...outfit}

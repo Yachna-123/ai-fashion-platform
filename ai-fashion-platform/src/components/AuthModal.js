@@ -7,8 +7,8 @@ function AuthModal({ onClose, onLogin }) {
 
   const handleSubmit = async () => {
     const url = isLogin
-      ? 'https://styleai-backend-z1lz.onrender.com/api/auth/login'
-      : 'https://styleai-backend-z1lz.onrender.com/api/auth/signup'
+      ? 'http://localhost:5000/api/auth/login'
+      : 'http://localhost:5000/api/auth/signup'
 
     const body = isLogin
       ? { email: form.email, password: form.password }
@@ -36,7 +36,7 @@ function AuthModal({ onClose, onLogin }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-gray-900 p-8 rounded-2xl w-96 border border-gray-700">
+      <div className="bg-gray-900 p-8 rounded-2xl w-96 border border-gray-700 relative">
         <h2 className="text-white text-2xl font-bold mb-6 text-center">
           {isLogin ? 'Welcome Back 👗' : 'Join StyleAI 👗'}
         </h2>
