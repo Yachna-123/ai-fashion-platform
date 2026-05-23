@@ -3,23 +3,22 @@ import Fuse from 'fuse.js'
 import ProductCard from './ProductCard'
 
 const outfits = [
-  { id: 1, name: "Beige Linen Set", price: "2199", aesthetic: "Old Money", emoji: "👔" },
-  { id: 2, name: "Y2K Crop Top", price: "999", aesthetic: "Y2K Vibes", emoji: "👚" },
-  { id: 3, name: "Oversized Hoodie", price: "1499", aesthetic: "Street Style", emoji: "🧥" },
-  { id: 4, name: "Floral Sundress", price: "1799", aesthetic: "Summer Casual", emoji: "👗" },
-  { id: 5, name: "Sequin Mini Dress", price: "2499", aesthetic: "Party Look", emoji: "✨" },
-  { id: 6, name: "Blazer + Trousers", price: "3199", aesthetic: "Old Money", emoji: "🎩" },
-  { id: 7, name: "Denim Jacket", price: "1299", aesthetic: "Street Style", emoji: "🧤" },
-  { id: 8, name: "Floral Co-ord Set", price: "2099", aesthetic: "Summer Casual", emoji: "🌸" },
+  { id: 1, name: "Beige Linen Set", price: "2199", aesthetic: "Old Money", emoji: "👔", tags: "linen beige formal classy elegant" },
+  { id: 2, name: "Y2K Crop Top", price: "999", aesthetic: "Y2K Vibes", emoji: "👚", tags: "y2k crop top trendy cute" },
+  { id: 3, name: "Oversized Hoodie", price: "1499", aesthetic: "Street Style", emoji: "🧥", tags: "hoodie hudy hodi hodie hoddie sweater pullover oversized casual cozy" },
+  { id: 4, name: "Floral Sundress", price: "1799", aesthetic: "Summer Casual", emoji: "👗", tags: "dress sundres floral summer sundress frock" },
+  { id: 5, name: "Sequin Mini Dress", price: "2499", aesthetic: "Party Look", emoji: "✨", tags: "sequin party dress mini night out glam shimmer" },
+  { id: 6, name: "Blazer + Trousers", price: "3199", aesthetic: "Old Money", emoji: "🎩", tags: "blazer trouser formal suit office smart" },
+  { id: 7, name: "Denim Jacket", price: "1299", aesthetic: "Street Style", emoji: "🧤", tags: "denim jacket jeans casual street cool" },
+  { id: 8, name: "Floral Co-ord Set", price: "2099", aesthetic: "Summer Casual", emoji: "🌸", tags: "coord set floral summer matching set co-ord" },
 ]
 
 const fuse = new Fuse(outfits, {
-  keys: ['name', 'aesthetic'],
-  threshold: 0.8,
-  distance: 300,
+  keys: ['name', 'aesthetic', 'tags'],
+  threshold: 0.4,
+  distance: 200,
   minMatchCharLength: 2,
   ignoreLocation: true,
-  useExtendedSearch: false,
   shouldSort: true,
 })
 
@@ -34,7 +33,8 @@ function ProductGrid({ filter, search, wishlist, onWishlist, sort, onCardClick, 
       ? fuseResults.map(r => r.item)
       : outfits.filter(o =>
           o.name.toLowerCase().includes(search.toLowerCase()) ||
-          o.aesthetic.toLowerCase().includes(search.toLowerCase())
+          o.aesthetic.toLowerCase().includes(search.toLowerCase()) ||
+          o.tags.toLowerCase().includes(search.toLowerCase())
         )
     if (filter !== "All") {
       displayOutfits = displayOutfits.filter(o => o.aesthetic === filter)
