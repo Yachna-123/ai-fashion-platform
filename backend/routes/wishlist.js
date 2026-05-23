@@ -1,9 +1,20 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+const mongoose = require('mongoose')
 
-// Middleware to verify token
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    wishlist: { type: [String], default: [] }
+  },
+  { timestamps: true }
+)
+
+const User = mongoose.models.User || mongoose.model('User', userSchema)
+
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) return res.status(401).json({ message: 'No token' })
@@ -16,7 +27,6 @@ const auth = (req, res, next) => {
   }
 }
 
-// GET wishlist
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.userId)
@@ -26,7 +36,6 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
-// ADD to wishlist
 router.post('/add', auth, async (req, res) => {
   try {
     const { item } = req.body
@@ -42,7 +51,6 @@ router.post('/add', auth, async (req, res) => {
   }
 })
 
-// REMOVE from wishlist
 router.post('/remove', auth, async (req, res) => {
   try {
     const { item } = req.body
